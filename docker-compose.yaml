@@ -1,0 +1,46 @@
+version: '3'
+
+services:
+  db:
+    image: 'postgres:latest'
+    container_name: db
+    ports: 
+       - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: docker
+      POSTGRES_USER: postgres
+      POSTGRES_DB: movie_list
+    volumes:
+      - $HOME/docker/data/movie_db:/var/lib/postgresql/data
+    networks:
+      - app-network
+      
+  ui:
+    build: ./movie-ui
+    container_name: ui
+    ports:
+      - "3000:3000"
+    depends_on: 
+      - api
+    networks:
+      - app-network
+    volumes:
+      - ./movie-ui:/app
+
+  api:
+    build: ./movie-api
+    container_name: api
+    ports:
+      - "3001:3001"
+    networks:
+      - app-network
+    environment:
+      DB_CONNECTION: postgres://postgres:docker@db:5432/movie_list
+    depends_on:
+      - db
+    volumes:
+      - ./movie-api:/app
+
+networks:
+  app-network:
+    driver: bridge
