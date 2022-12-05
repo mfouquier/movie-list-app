@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import styled from 'styled-components';
+import Switch from '@mui/material/Switch'
 
 const Image = styled.img`
   width: 20rem;
@@ -38,6 +39,31 @@ const AddButton = styled.button`
   margin-left: 8rem;
   height: 75%;
 `
+const ButtonGroup = styled.div`
+  display: flex;
+  justify-content: center;
+`
+const WatchItButton = styled.button`
+  background-color: green;
+  color: white;
+  border-radius: 5px;
+  display: flex;
+  margin: 0.5rem;
+`
+const AlreadyWatchedButton = styled.button`
+  background-color: green;
+  color: white;
+  border-radius: 5px;
+  display: flex;
+  margin: 0.5rem;
+`
+const DeleteButton = styled.button`
+  background-color: green;
+  color: white;
+  border-radius: 5px;
+  display: flex;
+  margin: 0.5rem;
+`
 const SearchContainer = styled.div`
   display: flex;
   margin: 1rem;
@@ -61,6 +87,7 @@ const InputLabel = styled.label`
   font-size: 20px;
   margin: 0.5rem;
 `
+const label = { inputProps: { 'aria-label': 'Seen It' } };
 
 
 export default function Home() {
@@ -92,7 +119,14 @@ export default function Home() {
       [event.target.name]: value
     })
   }
-  console.log(addMovie)
+
+  const handleMovieDelete = (event) => {
+    console.log(event.target.value)
+    axios.delete(`http://localhost:3001/${event.target.value}`)
+      .then(function (response) {
+        console.log(response)
+      })
+  }
 
   async function submitSearch() {
     try {
@@ -108,7 +142,6 @@ export default function Home() {
     try {
       axios.post('http://localhost:3001', addMovie)
         .then(function (response) {
-          console.log(response)
         })
     } catch (err) {
       console.log(`Could not add movie ${err}`)
@@ -153,6 +186,14 @@ export default function Home() {
             <ImageCard key={movie.id}>
               <h4>{movie.title}</h4>
               <Image src={movie.image} alt={movie.title} />
+              <ButtonGroup>
+                <Switch label='Watch It!!!' />
+                <Switch label='Seen It' />
+                <DeleteButton
+                  type='submit'
+                  value={movie.id}
+                  onClick={handleMovieDelete}>Delete</DeleteButton>
+              </ButtonGroup>
             </ImageCard>
           </>
         ))}
